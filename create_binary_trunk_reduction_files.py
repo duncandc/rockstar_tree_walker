@@ -79,6 +79,7 @@ for tree_fname in ascii_hlist_fname_generator(args.input_dirname, args.input_hli
         assert tree_fname[-4:] == ".dat", "Input filename must conclude with '.dat'"
     except AssertionError:
         os.system("gunzip -f " + tree_fname)
+        tree_fname = tree_fname[:-3]
         assert tree_fname[-4:] == ".dat", "Input filename must conclude with '.dat'"
 
     # Read the ascii data for the subvolume
