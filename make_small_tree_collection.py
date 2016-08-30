@@ -1,4 +1,7 @@
-"""
+""" Module used to create a small collection of merger tree data with the
+same file patterns and data stream as the full trees.
+Useful for creating a more tractable data stream for exploring different
+tree-walking strategies.
 """
 import os
 from filename_utils import tree_subvol_substring_from_int as fname_from_int
@@ -77,7 +80,7 @@ def tree_selection_generator(hlist_filename, i, j):
 
 def make_tree_collection(hlist_filename, output_dirname,
         num_divs=5, num_trees_per_output_file=3):
-    """
+    """ Create a collection of trees from a single subvolume.
     """
     header = list(read_header(hlist_filename))
 
