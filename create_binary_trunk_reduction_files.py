@@ -14,14 +14,16 @@ from warnings import warn
 parser = argparse.ArgumentParser()
 
 parser.add_argument("input_dirname",
-    help="Disk location where the hlist ascii data is stored")
+    help="Disk location of the input hlist ascii data. "
+    "Filenames are assumed to conclude with 'i_j_k.dat'")
 
 parser.add_argument("output_dirname",
-    help="Disk location where the Numpy binaries will be stored")
+    help="Desired directory to store the output Numpy binaries")
 
 parser.add_argument("colnames",
         help="Sequence of names of the columns for which you want to create binaries. "
-        "Each string in the sequence must appear in the `tree_column_info_fname` file.",
+        "Each string in the sequence must appear somewhere in the first column "
+        "of the `tree_column_info_fname` file.",
         nargs='+')
 
 parser.add_argument("-input_hlist_filepat",
@@ -72,6 +74,13 @@ start = time()
 for tree_fname in ascii_hlist_fname_generator(args.input_dirname, args.input_hlist_filepat):
     print("...working on {0}".format(os.path.basename(tree_fname)))
 
+    # Uncompress the file if necessary
+    try:
+        assert tree_fname[-4:] == ".dat", "Input filename must conclude with '.dat'"
+    except AssertionError:
+        os.system("gunzip -f " + tree_fname)
+        assert tree_fname[-4:] == ".dat", "Input filename must conclude with '.dat'"
+
     # Read the ascii data for the subvolume
     subvolume_data = np.array(list(mmp_row_generator(tree_fname,
         mmp_col_index, desc_id_col_index, halo_id_col_index, *colnums_to_yield)), dtype=output_dt)
@@ -89,6 +98,4 @@ for tree_fname in ascii_hlist_fname_generator(args.input_dirname, args.input_hli
     store_new_trunk_indices_array(scale_factor_array, subvol_output_dirname)
 
 end = time()
-print("\nTotal runtime = {0:.2f} seconds\n".format(end-start))
-
-
+print("\nTotal runtime = {0:.1f} minutes\n".format((end-start)/60.))
