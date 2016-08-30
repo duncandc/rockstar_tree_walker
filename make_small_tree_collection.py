@@ -5,7 +5,8 @@ import os
 from rockstar_tree_subvol_fname_funcs import tree_subvol_substring_from_int as fname_from_int
 
 tree_basename = "tree_0_2_2.dat"
-tree_dirname = "/Users/aphearin/work/sims/bolplanck/trees"
+# tree_dirname = "/Users/aphearin/work/sims/bolplanck/trees"
+tree_dirname = "/Volumes/NbodyDisk1/Trees/bolplanck"
 tree_fname = os.path.join(tree_dirname, tree_basename)
 
 
@@ -43,6 +44,46 @@ def read_header(hlist_filename):
 # chararr = np.array(list(char_generator(tree_fname)))
 idx_final_header_line = last_header_index(tree_fname)
 header = list(read_header(tree_fname))
+
+
+def tree_selection_generator(hlist_filename, i, j):
+    """ Yield all raw lines of hlist_filename pertaining to [tree_i, tree_j),
+    excluding the header, but including the lines such as '#tree 2810141744'.
+
+    For example, tree_sequence_generator(hlist_filename, 2, 5) will yield the
+    subset of rows of hlist_filename pertaining to tree 2, tree 3, and tree 4.
+    This generator can be used to extract the data rows necessary to create a
+    desired slice of a tree file.
+    """
+    msg1 = "Final tree integer j = {0} must exceed first tree integer i = {1}".format(i, j)
+    assert j > 1,  msg1
+
+    with open(hlist_filename, 'r') as f:
+
+        # skip the header
+        while True:
+            header_line = next(f)
+            if header_line[0] == '#':
+                pass
+            else:
+                num_total_trees = int(header_line.strip())
+                break
+
+        msg2 = "There are num_total_trees = {0} < j = {1}".format(num_total_trees, j)
+        assert num_total_trees > j, msg2
+
+        try:
+            tree_counter = -1
+            while tree_counter < j:
+                raw_line = next(f)
+                if raw_line[0] == '#':
+                    tree_counter += 1
+                if (tree_counter >=i) & (tree_counter < j):
+                    yield raw_line
+
+        except StopIteration:
+            msg3 = "Unexpectedly reached end of hlist file, which must not be formatted correctly"
+            raise IndexError(msg3)
 
 
 # with open(tree_fname, 'r') as f:
