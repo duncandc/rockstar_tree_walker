@@ -2,7 +2,8 @@
 used in rockstar hlist analysis.
 """
 import string
-
+import os
+import fnmatch
 
 __all__ = ('base_10_signed_int_to_base_n_signed_int', 'tree_subvol_substring_from_int')
 
@@ -70,3 +71,13 @@ def _binary_fname_from_structured_arr_column(arr, colname):
 
     type_string = str(arr[colname].dtype.type.__name__)
     return colname + '_data_' + type_string
+
+
+def ascii_hlist_fname_generator(input_dirname, filepat):
+    """ Yield all the files in ``input_dirname`` with basenames matching
+    the specified file pattern.
+    """
+    for path, dirlist, filelist in os.walk(input_dirname):
+        for name in fnmatch.filter(filelist, filepat):
+            yield os.path.join(path, name)
+

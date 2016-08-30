@@ -36,3 +36,11 @@ def simulation_column_dtype(fname='bolplanck_columns.dat'):
             data_types.append(line)
 
     return np.dtype(data_types)
+
+
+def sub_dtype(dtype, names):
+    """
+    """
+    return np.dtype([(name, dtype[name]) for name in names])
+
+
