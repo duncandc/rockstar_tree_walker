@@ -36,7 +36,7 @@ def read_header(hlist_filename):
         while True:
             header_line = next(f)
             if header_line[0] == '#':
-                yield header_line.strip()
+                yield header_line
             else:
                 break
 
@@ -84,6 +84,43 @@ def tree_selection_generator(hlist_filename, i, j):
         except StopIteration:
             msg3 = "Unexpectedly reached end of hlist file, which must not be formatted correctly"
             raise IndexError(msg3)
+
+
+def make_tree_collection(hlist_filename, output_dirname,
+        num_divs=5, num_trees_per_output_file=3):
+    """
+    """
+    header = list(read_header(hlist_filename))
+
+    num_output_files = num_divs**3
+
+    first_tree = 0
+    for i in range(num_output_files):
+
+        # Retrieve the relevant data
+        last_tree = first_tree + num_trees_per_output_file
+        data = tree_selection_generator(hlist_filename, first_tree, last_tree)
+
+        # Create an output filename
+        subvol_str = fname_from_int(i, num_divs)
+        output_basename = 'tree_'+subvol_str+'.dat'
+        output_fname = os.path.join(output_dirname, output_basename)
+
+        # Write a header, followed by num_trees_per_output_file, followed by the relevant data
+        with open(output_fname, 'wb') as f:
+
+            for line in header:
+                f.write(line)
+            f.write(str(num_trees_per_output_file)+"\n")
+            for line in data:
+                f.write(line)
+
+        first_tree = last_tree
+
+
+
+
+
 
 
 # with open(tree_fname, 'r') as f:
