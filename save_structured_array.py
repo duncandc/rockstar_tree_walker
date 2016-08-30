@@ -3,9 +3,10 @@ as a set of binaries with standardized filenames and subdirectory locations.
 """
 import os
 import numpy as np
+from filename_utils import _binary_fname_from_structured_arr_column
 
 
-def store_structured_array(arr, parent_dirname, columns_to_save='all'):
+def store_structured_array_columns(arr, parent_dirname, columns_to_save='all'):
     """ Function stores the desired columns of a structured array on disk.
 
     Parameters
@@ -31,7 +32,8 @@ def store_structured_array(arr, parent_dirname, columns_to_save='all'):
             os.makedirs(output_dirname)
         except OSError:
             pass
-        output_fname = os.path.join(output_dirname, _column_filename(arr, colname))
+        output_fname = os.path.join(output_dirname,
+            _binary_fname_from_structured_arr_column(arr, colname))
         np.save(output_fname, arr[colname])
 
 
@@ -46,14 +48,3 @@ def store_new_trunk_indices_array(scale_factor_array, parent_dirname):
     except OSError:
         pass
     np.save(output_fname, idx_new_trunks)
-
-
-def _column_filename(arr, colname):
-    """
-    """
-    msg = "Column name ``{0}`` does not appear in input array".format(colname)
-    assert colname in arr.dtype.names, msg
-
-    type_string = str(arr[colname].dtype.type.__name__)
-    return colname + '_data_' + type_string
-
