@@ -4,12 +4,12 @@ of Numpy binaries with standardized filenames and directory locations.
 import argparse
 import os
 from simulation_column_dtype import simulation_column_dtype, sub_dtype
-from filename_utils import ascii_hlist_fname_generator
+from filename_utils import ascii_hlist_fname_generator, _binary_fname_from_structured_arr_column
 from ascii_subvolume_walker import mmp_row_generator
 from time import time
 import numpy as np
-from save_structured_array import store_structured_array_columns
-
+from save_structured_array import store_structured_array_columns, store_new_trunk_indices_array
+from warnings import warn
 
 parser = argparse.ArgumentParser()
 
@@ -32,7 +32,7 @@ parser.add_argument("-input_hlist_filepat",
 parser.add_argument("-tree_column_info_fname",
     help="Name of the user-created ascii file "
     "used to infer the dtype of the data stored in the hlist ascii file. "
-    "Must at least have ``mmp``, ``desc_id`` and ``halo_id`` as column names."
+    "Must at least have ``mmp``, ``desc_id``, ``halo_id`` and ``scale_factor`` as column names."
     "See simulation_column_dtype for example formatting."
     "Default assumes tree hlist files are associated with "
     "simname = `bolplanck`, version_name = `version_0p4`",
@@ -53,12 +53,17 @@ try:
     mmp_col_index = hlist_dt.names.index('mmp')
     desc_id_col_index = hlist_dt.names.index('desc_id')
     halo_id_col_index = hlist_dt.names.index('halo_id')
-except ValueError:
+    assert 'scale_factor' in hlist_dt.names
+except (ValueError, AssertionError):
     msg = ("The `tree_column_info_fname` file must at least have columns named \n"
-            "``mmp``, ``desc_id`` and ``halo_id``.")
+            "``mmp``, ``desc_id``, ``halo_id`` and ``scale_factor``.")
     raise ValueError(msg)
 
-colnums_to_yield = [hlist_dt.names.index(name) for name in args.colnames]
+colnames_to_yield = args.colnames
+if 'scale_factor' not in colnames_to_yield:
+    colnames_to_yield.append('scale_factor')
+    warn("Automatically adding ``scale_factor`` to colnames_to_yield")
+colnums_to_yield = [hlist_dt.names.index(name) for name in colnames_to_yield]
 
 output_dt = sub_dtype(hlist_dt, args.colnames)
 
@@ -66,17 +71,24 @@ print("\n")
 start = time()
 for tree_fname in ascii_hlist_fname_generator(args.input_dirname, args.input_hlist_filepat):
     print("...working on {0}".format(os.path.basename(tree_fname)))
+
+    # Read the ascii data for the subvolume
     subvolume_data = np.array(list(mmp_row_generator(tree_fname,
         mmp_col_index, desc_id_col_index, halo_id_col_index, *colnums_to_yield)), dtype=output_dt)
 
+    # Write the data to a Numpy binary
     subvol_output_dirname = os.path.join(args.output_dirname, "subvol_"+tree_fname[-9:-4])
     store_structured_array_columns(subvolume_data, subvol_output_dirname)
 
+    # Save the array storing the indices of the trunks
+    scale_factor_array_basename = _binary_fname_from_structured_arr_column(
+        subvolume_data, 'scale_factor')+'.npy'
+    scale_factor_array_fname = os.path.join(subvol_output_dirname,
+            'scale_factor', scale_factor_array_basename)
+    scale_factor_array = np.load(scale_factor_array_fname)
+    store_new_trunk_indices_array(scale_factor_array, subvol_output_dirname)
+
 end = time()
 print("\nTotal runtime = {0:.2f} seconds\n".format(end-start))
-# print(np.shape(data))
-# print(data.dtype)
-# print(data['halo_id'][0:4])
-
 
 
