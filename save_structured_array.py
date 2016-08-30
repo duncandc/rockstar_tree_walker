@@ -1,11 +1,24 @@
-"""
+""" Module storing functions used to store a Numpy structured array on disk
+as a set of binaries with standardized filenames and subdirectory locations.
 """
 import os
 import numpy as np
 
 
 def store_structured_array(arr, parent_dirname, columns_to_save='all'):
-    """
+    """ Function stores the desired columns of a structured array on disk.
+
+    Parameters
+    ----------
+    arr : array
+        Numpy structured array
+
+    parent_dirname : string
+        Root directory where the data should be stored
+
+    columns_to_save : sequence of strings, optional
+        List of column names that will be saved to disk. Default argument 'all'
+        will store all columns.
     """
     dt = arr.dtype
     if columns_to_save == 'all':
@@ -18,11 +31,11 @@ def store_structured_array(arr, parent_dirname, columns_to_save='all'):
             os.makedirs(output_dirname)
         except OSError:
             pass
-        output_fname = os.path.join(output_dirname, column_filename(arr, colname))
+        output_fname = os.path.join(output_dirname, _column_filename(arr, colname))
         np.save(output_fname, arr[colname])
 
 
-def column_filename(arr, colname):
+def _column_filename(arr, colname):
     """
     """
     msg = "Column name ``{0}`` does not appear in input array".format(colname)
