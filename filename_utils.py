@@ -90,3 +90,11 @@ def trunk_array_fname_generator(trunk_dirname, ndivs, propname):
         filepat = propname + '_data*.npy'
         for fname in fname_generator(subvol_dirname, filepat):
             yield fname
+
+
+def trunk_indices_fname_generator(trunk_dirname, ndivs):
+    basename = "new_trunk_indices_data_int64.npy"
+    imax = ndivs**3 - 1
+    for i in range(imax):
+        subvol_substr = tree_subvol_substring_from_int(i, ndivs)
+        yield os.path.join(trunk_dirname, 'subvol_'+subvol_substr, basename)
