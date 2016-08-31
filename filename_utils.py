@@ -73,7 +73,7 @@ def _binary_fname_from_structured_arr_column(arr, colname):
     return colname + '_data_' + type_string
 
 
-def ascii_hlist_fname_generator(input_dirname, filepat):
+def fname_generator(input_dirname, filepat):
     """ Yield all the files in ``input_dirname`` with basenames matching
     the specified file pattern.
     """
@@ -81,3 +81,12 @@ def ascii_hlist_fname_generator(input_dirname, filepat):
         for name in fnmatch.filter(filelist, filepat):
             yield os.path.join(path, name)
 
+
+def trunk_array_fname_generator(trunk_dirname, ndivs, propname):
+    imax = ndivs**3 - 1
+    for i in range(imax):
+        subvol_substr = tree_subvol_substring_from_int(i, ndivs)
+        subvol_dirname = os.path.join(trunk_dirname, 'subvol_'+subvol_substr, propname)
+        filepat = propname + '_data*.npy'
+        for fname in fname_generator(subvol_dirname, filepat):
+            yield fname

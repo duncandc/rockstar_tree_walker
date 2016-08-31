@@ -4,7 +4,7 @@ of Numpy binaries with standardized filenames and directory locations.
 import argparse
 import os
 from simulation_column_dtype import simulation_column_dtype, sub_dtype
-from filename_utils import ascii_hlist_fname_generator, _binary_fname_from_structured_arr_column
+from filename_utils import fname_generator, _binary_fname_from_structured_arr_column
 from ascii_subvolume_walker import mmp_row_generator
 from time import time
 import numpy as np
@@ -71,7 +71,7 @@ output_dt = sub_dtype(hlist_dt, args.colnames)
 
 print("\n")
 start = time()
-for tree_fname in ascii_hlist_fname_generator(args.input_dirname, args.input_hlist_filepat):
+for tree_fname in fname_generator(args.input_dirname, args.input_hlist_filepat):
     print("...working on {0}".format(os.path.basename(tree_fname)))
 
     # Uncompress the file if necessary
