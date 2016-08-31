@@ -10,6 +10,22 @@ import os
 def mpeak_generator(trunks_dirname, ndivs):
     """ This generator loops over the trunk_generator, and for each trunk
     the maximum historical value of mvir is calculated and yielded.
+
+    Parameters
+    ----------
+    trunks_dirname : string
+        Absolute path to the directory where the binary trunk data is stored.
+
+    ndivs : int
+        Number of subvolume divisions per dimension (e.g., ndivs=5 for bolplanck)
+
+    Returns
+    -------
+    halo_id : long
+        ID of the root of the trunk
+
+    mpeak : float
+        Peak historical mass of the main progenitor
     """
     gen = trunk_generator(trunks_dirname, ndivs, 'halo_id', 'mvir')
     for subvol_substr, trunks in gen:
@@ -21,7 +37,18 @@ def mpeak_generator(trunks_dirname, ndivs):
 
 def tabulate_mpeak(trunks_dirname, ndivs, foutname):
     """ This function loops over the mpeak_generator and saves the result
-    to a Numpy binary
+    to a Numpy binary.
+
+    Parameters
+    ----------
+    trunks_dirname : string
+        Absolute path to the directory where the binary trunk data is stored.
+
+    ndivs : int
+        Number of subvolume divisions per dimension (e.g., ndivs=5 for bolplanck)
+
+    foutname : string
+        Name of the output Numpy binary.
     """
     try:
         os.makedirs(os.path.dirname(os.path.abspath(foutname)))
