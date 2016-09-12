@@ -12,7 +12,7 @@ For help on running the script:
 
 $ python create_binary_trunk_reduction_files.py --help
 
-After you creat the binaries you can use the `trunk_generator` to calculate quantities deriving from the main progenitor histories. For an explicit example usage of the `trunk_generator`, see the `tabulate_mpeak` function in the `example_calculations module`. This function calculates the peak historical mass for every (sub)halo in the simulation and saves the result as a Numpy binary. By matching the pattern illustrated by the `tabulate_mpeak` function, you can calculate any quantity derivable from the main progenitor history of a halo, and store result in a convenient fashion for cross-matching against some existing halo catalog. 
+After you create the binaries you can use the `trunk_generator` to calculate quantities deriving from the main progenitor histories. For an explicit example usage of the `trunk_generator`, see the `tabulate_mpeak` function in the `example_calculations module`. This function calculates the peak historical mass for every (sub)halo in the simulation and saves the result as a Numpy binary. By matching the pattern illustrated by the `tabulate_mpeak` function, you can calculate any quantity derivable from the main progenitor history of a halo, and store result in a convenient fashion for cross-matching against some existing halo catalog. 
 
 
 ## Using the binary files
