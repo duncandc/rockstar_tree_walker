@@ -4,7 +4,7 @@ the Numpy dtype of Rockstar hlist ascii data.
 import numpy as np
 
 
-def simulation_column_dtype(fname='bolplanck_columns.dat'):
+def simulation_column_dtype(fname='bolshoi_columns.dat'):
     """ Function returning the Numpy dtype given user-created ascii data that
     places the Rockstar hlist header information into a specific format.
     The specific format is described below; see the ``bolplanck_columns.dat``

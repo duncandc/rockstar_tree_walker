@@ -38,7 +38,7 @@ parser.add_argument("-tree_column_info_fname",
     "See simulation_column_dtype for example formatting."
     "Default assumes tree hlist files are associated with "
     "simname = `bolplanck`, version_name = `version_0p4`",
-    default="bolplanck_columns.dat")
+    default="bolshoi_columns.dat")
 
 
 args = parser.parse_args()
